@@ -10,7 +10,7 @@ const Gameboard = (() => {
     [2, 5, 8],
     [0, 4, 8],
     [2, 4, 6],
-  ]
+  ];
 
   const checkWin = function () {
     for (let p of winPositions) {
@@ -52,20 +52,6 @@ const Gameboard = (() => {
       return false;
     }
   }
-
-  // function printBoard() {
-  //   let formattedBoard = '';
-  //   for (let i = 0; i < 3; i++) {
-  //     for (let j = 0; j < 3; j++) {
-  //       const position = i * 3 + j;
-  //       formattedBoard += board[position] === '' ? '-' : board[position];
-  //       if (j < 2) formattedBoard += ' | ';
-  //     }
-  //     formattedBoard += '\n';
-  //     if (i < 2) formattedBoard += '---------\n';
-  //   }
-  //   return formattedBoard;
-  // }
 
   function getBoard() {
     return board;
