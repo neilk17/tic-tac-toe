@@ -1,0 +1,8 @@
+button {
+  height: 20px;
+}
+.game {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  max-width: 300px;
+}
