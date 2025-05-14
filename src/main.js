@@ -30,7 +30,6 @@ const Gameboard = (() => {
         return 'x';
       } else if (countO === 3) {
         return 'o';
-      } else {
       }
     }
     return null;
@@ -54,25 +53,25 @@ const Gameboard = (() => {
     }
   }
 
-  function printBoard() {
-    let formattedBoard = '';
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        const position = i * 3 + j;
-        formattedBoard += board[position] === '' ? '-' : board[position];
-        if (j < 2) formattedBoard += ' | ';
-      }
-      formattedBoard += '\n';
-      if (i < 2) formattedBoard += '---------\n';
-    }
-    return formattedBoard;
-  }
+  // function printBoard() {
+  //   let formattedBoard = '';
+  //   for (let i = 0; i < 3; i++) {
+  //     for (let j = 0; j < 3; j++) {
+  //       const position = i * 3 + j;
+  //       formattedBoard += board[position] === '' ? '-' : board[position];
+  //       if (j < 2) formattedBoard += ' | ';
+  //     }
+  //     formattedBoard += '\n';
+  //     if (i < 2) formattedBoard += '---------\n';
+  //   }
+  //   return formattedBoard;
+  // }
 
   function getBoard() {
     return board;
   }
 
-  return { getBoard, printBoard, makeMove, resetBoard, checkWin }
+  return { getBoard, makeMove, resetBoard, checkWin }
 })()
 
 const GameController = (() => {
@@ -87,17 +86,20 @@ const GameController = (() => {
 
   function play(move) {
     const success = board.makeMove(move, activePlayer);
+    if (!success) {
+      msg = `invalid move`;
+      return { success, msg }
+    }
+
     let msg = '';
     const player = getActivePlayer();
     const winner = board.checkWin();
-    let isDraw = false;
 
-    if (!winner && board.getBoard().length === 9) {
-      isDraw = board.getBoard().every(cell => cell !== '');
-      if (isDraw) {
-        msg = 'that\'s a draw';
-        return { success, isWin: winner, isDraw, player, msg };
-      }
+    if (!winner && board.getBoard().every(cell => cell != '')) {
+      msg = 'that\'s a draw';
+      return {
+        success, winner, isDraw: true, player, msg
+      };
     }
 
     if (success && winner) {
@@ -106,7 +108,6 @@ const GameController = (() => {
     } else if (success) {
       switchPlayer();
       msg = `${activePlayer} to play`
-      // const winner = isWin();
       return { success, winner, player, msg }
     } else {
       msg = `invalid move`;
@@ -114,15 +115,15 @@ const GameController = (() => {
     }
   }
 
-  function printNewRound() {
-    board.printBoard();
-  }
+  // function printNewRound() {
+  //   board.printBoard();
+  // }
 
   function switchPlayer() {
     activePlayer = activePlayer === players[0] ? players[1] : players[0];
   }
 
-  printNewRound();
+  // printNewRound();
 
   return {
     play,
@@ -139,7 +140,6 @@ const DomHandler = (() => {
   const resetButton = document.createElement('button')
   resetButton.innerText = 'Reset Button';
   resetButton.addEventListener('click', () => {
-    GameController.board.resetBoard();
     resetBoardUI();
   })
 
@@ -164,11 +164,11 @@ const DomHandler = (() => {
       }
 
       // check winner
-      if (next.isWin) {
+      if (next.winner) {
         msg.innerText = next.msg;
         btn.innerText = next.player;
-        const buttons = document.querySelectorAll('button');
-        buttons.setAttribute(disabled)
+        const buttons = document.querySelectorAll('.game button');
+        buttons.forEach(btn => { btn.setAttribute("disabled", "true") })
       }
 
       // regular valid move
@@ -186,6 +186,7 @@ const DomHandler = (() => {
     const buttons = board.querySelectorAll('button');
     buttons.forEach(btn => {
       btn.innerText = '';
+      btn.removeAttribute("disabled");
     });
     msg.innerText = ''
   }
